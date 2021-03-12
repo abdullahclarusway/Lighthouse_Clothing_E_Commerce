@@ -1,10 +1,11 @@
 import React from "react";
 import "./App.css";
+import Home from "./Home";
 
 function App() {
   return (
     <div>
-      <h1>Let's build a e-commerce app</h1>
+      <Home />
     </div>
   );
 }

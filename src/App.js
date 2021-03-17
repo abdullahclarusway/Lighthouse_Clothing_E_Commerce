@@ -5,13 +5,25 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Shop from "./pages/shop/Shop";
 import Header from "./components/header/Header";
 import SignInandSignUp from "./pages/signIn-signUp/SignInandSignUp";
-import { auth } from "./firebase/Firebase.utils";
+import { auth, createUserProfileDocument } from "./firebase/Firebase.utils";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => setCurrentUser(user));
+    auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot((snapShot) => {
+          setCurrentUser({
+            id: snapShot.id,
+            ...snapShot.data(),
+          });
+        }, console.log(currentUser));
+      } else {
+        setCurrentUser(userAuth);
+      }
+    });
   }, []);
 
   console.log(currentUser);

@@ -1,6 +1,8 @@
-import firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/auth";
 
-const firebaseConfig = {
+const config = {
   apiKey: "AIzaSyA4wAzQWKAqUDb87YtVP5bu07Y8qcnXZlc",
   authDomain: "lighthouse-clothing.firebaseapp.com",
   projectId: "lighthouse-clothing",
@@ -8,18 +10,19 @@ const firebaseConfig = {
   messagingSenderId: "895768054597",
   appId: "1:895768054597:web:c61ad9f6744949a1d3cc2c",
 };
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+firebase.initializeApp(config);
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
-  const userRef = db.doc(`users/${userAuth.uid}`);
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
+
   const snapShot = await userRef.get();
 
   if (!snapShot.exists) {
     const { displayName, email } = userAuth;
     const createdAt = new Date();
-
     try {
       await userRef.set({
         displayName,
@@ -35,10 +38,11 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
-const db = firebaseApp.firestore();
-const auth = firebase.auth();
+export const auth = firebase.auth();
+export const firestore = firebase.firestore();
+
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
-const signInWithGoogle = () => auth.signInWithPopup(provider);
+export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
-export { auth, db, signInWithGoogle };
+export default firebase;
